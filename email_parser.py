@@ -82,8 +82,8 @@ def parser_latam(html_file):
             flightCodes.append(code[0]) 
 
     # creates the dictionaries to be returned by the function
-    old_flight={"carrier": flightCodes[0][:2], "carrier_number": flightCodes[0][2:], "departure": {"airport":airports[0], "airport_iata": iataCodes[0], "datetime": str(date_time_objs[0])}, "arrival": {"airport":airports[1], "airport_iata": iataCodes[1], "datetime": str(date_time_objs[1])}}
-    new_flight={"carrier": flightCodes[1][:2], "carrier_number": flightCodes[1][2:], "departure": {"airport":airports[0], "airport_iata": iataCodes[0], "datetime": str(date_time_objs[2])}, "arrival": {"airport":airports[1], "airport_iata": iataCodes[1], "datetime": str(date_time_objs[3])}}
+    old_flight={"carrier": flightCodes[0][:2], "carrier_number": flightCodes[0][2:], "departure": {"airport":airports[0], "airport_iata": iataCodes[0], "datetime": date_time_objs[0]}, "arrival": {"airport":airports[1], "airport_iata": iataCodes[1], "datetime": date_time_objs[1]}}
+    new_flight={"carrier": flightCodes[1][:2], "carrier_number": flightCodes[1][2:], "departure": {"airport":airports[0], "airport_iata": iataCodes[0], "datetime": date_time_objs[2]}, "arrival": {"airport":airports[1], "airport_iata": iataCodes[1], "datetime": date_time_objs[3]}}
 
     return  {"reservation_number":res_number, "old_flights": old_flight, "new_flights": new_flight}
 
@@ -110,7 +110,7 @@ def parser_norwegian(html_file):
         #creating a list with one dict for each flight
         flightLst=[]
         for flight in flightsSpan:
-            dct = {"carrier": flight[6].getText()[:3], "carrier_number": flight[6].getText()[3:0], "departure": {"airport":flight[2].getText(), "airport_iata": flight[3].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": str(datetime.datetime.strptime(flight[7].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M"))}, "arrival": {"airport":flight[4].getText(), "airport_iata": flight[5].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": str(datetime.datetime.strptime(flight[8].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M"))}}
+            dct = {"carrier": flight[6].getText()[:3], "carrier_number": flight[6].getText()[3:0], "departure": {"airport":flight[2].getText(), "airport_iata": flight[3].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[7].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}, "arrival": {"airport":flight[4].getText(), "airport_iata": flight[5].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[8].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}}
             flightLst.append(dct)
 
         return flightLst
@@ -140,7 +140,7 @@ for subdir, dirs, files in os.walk(path):
             if airline in parser_dict:
                 output = parser_dict[airline](path+"/"+airline+"/"+file) #runs the parser for the file
                 with open(path+"/"+airline+"/"+file[:-4]+"json", "w") as outfile: #creates the outputs in the same folder as the html files
-                    json.dump(output, outfile, indent=4, sort_keys=False, ensure_ascii=False)
+                    json.dump(output, outfile, indent=4, sort_keys=False, ensure_ascii=False, default=str)
 
 
 # In[ ]:
