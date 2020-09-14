@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
 
 import re
 import json
@@ -110,7 +108,7 @@ def parser_norwegian(html_file):
         #creating a list with one dict for each flight
         flightLst=[]
         for flight in flightsSpan:
-            dct = {"carrier": flight[6].getText()[:3], "carrier_number": flight[6].getText()[3:0], "departure": {"airport":flight[2].getText(), "airport_iata": flight[3].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[7].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}, "arrival": {"airport":flight[4].getText(), "airport_iata": flight[5].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[8].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}}
+            dct = {"carrier": flight[6].getText()[:2], "carrier_number": flight[6].getText()[2:], "departure": {"airport":flight[2].getText(), "airport_iata": flight[3].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[7].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}, "arrival": {"airport":flight[4].getText(), "airport_iata": flight[5].getText().replace(u'\xa0', u'').replace('(','').replace(')',''), "datetime": datetime.datetime.strptime(flight[8].getText().strip().replace(u'\xa0', u''), "%d%b%Y%H:%M")}}
             flightLst.append(dct)
 
         return flightLst
@@ -136,14 +134,12 @@ parser_dict = {"latam":parser_latam, "norwegian":parser_norwegian}
 for subdir, dirs, files in os.walk(path):
     for file in files:
         if file.lower().endswith(".html"):
-            airline = subdir.rsplit("/")[-1]
+            airline = subdir.rsplit("/")[-1] #for windows, change the '/' to '\\'
             if airline in parser_dict:
                 output = parser_dict[airline](path+"/"+airline+"/"+file) #runs the parser for the file
                 with open(path+"/"+airline+"/"+file[:-4]+"json", "w") as outfile: #creates the outputs in the same folder as the html files
                     json.dump(output, outfile, indent=4, sort_keys=False, ensure_ascii=False, default=str)
 
-
-# In[ ]:
 
 
 
